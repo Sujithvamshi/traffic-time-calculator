@@ -9,17 +9,26 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
 <style>
-    body {
+  body {
   font-family: Arial, sans-serif;
   text-align: center;
+  background-color: #f1f1f1;
 }
 
 h1 {
   color: #4CAF50;
+  margin: 30px 0;
 }
 
 label {
   font-weight: bold;
+}
+
+.form-container {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 input[type=text] {
@@ -45,12 +54,33 @@ button:hover {
 }
 
 #output {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   margin: 20px 0;
+}
+
+.card {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin: 10px;
+  width: 300px;
+  text-align: left;
+}
+
+.card h2 {
+  margin: 0;
+}
+
+.card p {
+  margin: 10px 0;
   font-size: 1.2em;
 }
 
 </style>
-  <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key="></script>
   <script>
     function getTravelTime() {
       var origin = document.getElementById("origin").value;
@@ -84,16 +114,58 @@ button:hover {
     }
   </script>
 </head>
+  <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY"></script>
+  <script>
+    function getTravelTime() {
+      var origin = document.getElementById("origin").value;
+      var destination = document.getElementById("destination").value;
+      var service = new google.maps.DistanceMatrixService();
+      service.getDistanceMatrix({
+        origins: [origin],
+        destinations: [destination],
+        travelMode: 'DRIVING',
+        unitSystem: google.maps.UnitSystem.METRIC,
+        avoidHighways: false,
+        avoidTolls: false
+      }, function(response, status) {
+        if (status !== 'OK') {
+          alert('Error was: ' + status);
+        } else {
+          var originList = response.originAddresses;
+          var destinationList = response.destinationAddresses;
+          var outputDiv = document.getElementById('output');
+          outputDiv.innerHTML = '';
+          for (var i = 0; i < originList.length; i++) {
+            var results = response.rows[i].elements;
+            for (var j = 0; j < results.length; j++) {
+              outputDiv.innerHTML += '<div class="card">' +
+                '<h2>' + originList[i] + '</h2>' +
+                '<h2>' + destinationList[j] + '</h2>' +
+                '<p>' + results[j].distance.text + '</p>' +
+                '<p>' + results[j].duration.text + '</p>' +
+                '</div>';
+            }
+          }
+        }
+      });
+    }
+  </script>
+</head>
+
 <body>
   <h1>Travel Time Calculator</h1>
-  <label for="origin">Origin:</label>
-  <input type="text" id="origin" name="origin" placeholder="Enter GPS coordinates">
-  <br>
-  <label for="destination">Destination:</label>
-  <input type="text" id="destination" name="destination" placeholder="Enter GPS coordinates">
-  <br>
-  <button onclick="getTravelTime()">Calculate Travel Time</button>
-  <br>
+  <div class="form-container">
+    <form>
+      <label for="origin">Origin:</label>
+      <input type="text" id="origin" name="origin" placeholder="Enter GPS coordinates">
+      <br>
+      <label for="destination">Destination:</label>
+      <input type="text" id="destination" name="destination" placeholder="Enter GPS coordinates">
+      <br>
+      <button onclick="getTravelTime()">Calculate Travel Time</button>
+    </form>
+  </div>
   <div id="output"></div>
 </body>
+
 </html>
